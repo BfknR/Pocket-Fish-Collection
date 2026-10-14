@@ -8,8 +8,8 @@ using UnityEngine.InputSystem;
 namespace PocketFish.Game.Fishing
 {
     /// <summary>
-    /// Runs the fishing loop. Tapping a fish shadow starts the timing minigame,
-    /// and when it ends the catch is rolled, the fish leaves the pond and the result is revealed.
+    /// Runs the fishing loop. Tapping a fish shadow starts the multi-tap minigame,
+    /// and when its last tap is done the catch is rolled, the fish leaves the pond and the result is revealed.
     /// </summary>
     public sealed class PondController : MonoBehaviour
     {
@@ -17,6 +17,7 @@ namespace PocketFish.Game.Fishing
         private enum PondState { Idle, Fishing }
 
         [SerializeField] private CatchTuning _tuning;
+        [SerializeField] private MinigameBalance _balance;
         [SerializeField] private PondSession _session;
         [SerializeField] private Camera _camera;
         [SerializeField] private CatchRevealView _revealView;
@@ -25,7 +26,8 @@ namespace PocketFish.Game.Fishing
 
         private readonly System.Random _rng = new System.Random();
         private PondState _state = PondState.Idle;
-        private IMinigame _minigame;
+        private MultiTapMinigame _minigame;
+        private int _shownTapIndex;
         private FishView _activeView;
         private FishDefinition _activeDefinition;
         private FishSpecies _activeSpecies;
@@ -54,9 +56,15 @@ namespace PocketFish.Game.Fishing
 
             if (pressed) _minigame.Tap();
             _minigame.Tick(Time.deltaTime);
+            if (_minigame.IsFinished)
+            {
+                Resolve();
+                return;
+            }
+
+            if (_minigame.CurrentIndex != _shownTapIndex) ShowTap();
             _arcView.SetMarker(_minigame.MarkerPosition);
             _timerBar.SetProgress(_minigame.Progress);
-            if (_minigame.IsFinished) Resolve();
         }
 
         /// <summary>Checks whether the tap landed on a fish and starts fishing if it did.</summary>
@@ -83,23 +91,31 @@ namespace PocketFish.Game.Fishing
 
             _activeView = view;
             _activeDefinition = _session.DefinitionFor(view.Fish);
-            _activeSpecies = _activeDefinition.ToDomain(_tuning.MinigameTimeLimitSeconds);
+            _activeSpecies = _activeDefinition.ToDomain();
 
-            _minigame = new TapMinigame();
-            _minigame.Begin(_activeSpecies.Minigame);
+            _minigame = _balance.CreateMinigame(_activeSpecies.Rarity);
+            _minigame.Begin();
 
-            _arcView.Show(_activeSpecies.Minigame);
-            _timerBar.Show();
+            ShowTap();
             _state = PondState.Fishing;
         }
 
+        /// <summary>Draws the zones and resets the timer for the tap now in play.</summary>
+        private void ShowTap()
+        {
+            _shownTapIndex = _minigame.CurrentIndex;
+            _arcView.Show(_minigame.CurrentTier);
+            _timerBar.Show();
+        }
+
         /// <summary>
-        /// Finishes the attempt: rolls the quality from the tap grade, removes the fish from the pond,
+        /// Finishes the attempt: rolls the quality from the final grade, removes the fish from the pond,
         /// saves, and shows the result.
         /// </summary>
         private void Resolve()
         {
-            TapGrade grade = _minigame.Result;
+            MinigameResult result = _minigame.Result;
+            TapGrade grade = result.FinalGrade;
             Quality quality = CatchRoller.PickQuality(_tuning.OddsFor(grade), _rng);
             var outcome = new CatchOutcome(_activeSpecies, grade, quality);
 
@@ -111,7 +127,7 @@ namespace PocketFish.Game.Fishing
             _session.Save();
 
             _state = PondState.Idle;
-            _revealView.Show(outcome, _activeDefinition.Sprite);
+            _revealView.Show(outcome, _activeDefinition.Sprite, result.AverageScore);
         }
     }
 }

@@ -1,5 +1,3 @@
-using PocketFish.Domain.Fishing;
-
 namespace PocketFish.Domain.Catch
 {
     /// <summary>
@@ -13,13 +11,11 @@ namespace PocketFish.Domain.Catch
         /// <param name="id">Stable identifier, used when saving and loading the pond.</param>
         /// <param name="displayName">Name shown to the player.</param>
         /// <param name="rarity">How rare the species is.</param>
-        /// <param name="minigame">Difficulty of the catch minigame for this species.</param>
-        public FishSpecies(string id, string displayName, Rarity rarity, MinigameConfig minigame)
+        public FishSpecies(string id, string displayName, Rarity rarity)
         {
             Id = id;
             DisplayName = displayName;
             Rarity = rarity;
-            Minigame = minigame;
         }
 
         /// <summary>Stable identifier, used when saving and loading the pond.</summary>
@@ -30,8 +26,5 @@ namespace PocketFish.Domain.Catch
 
         /// <summary>How rare the species is.</summary>
         public Rarity Rarity { get; }
-
-        /// <summary>Difficulty of the catch minigame for this species.</summary>
-        public MinigameConfig Minigame { get; }
     }
 }

@@ -15,9 +15,5 @@ MonoBehaviour:
   _id: uglish
   _displayName: Uglish
   _rarity: 2
-  _sweepSeconds: 1.6
-  _goodHalfWidth: 0.15
-  _greatHalfWidth: 0.08
-  _perfectHalfWidth: 0.03
   _sprite: {fileID: 21300000, guid: f992b978e4d0542539322c41c2415ad1, type: 3}
   _previewPrefab: {fileID: 0}

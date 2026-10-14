@@ -15,9 +15,5 @@ MonoBehaviour:
   _id: harlefish
   _displayName: Harlefish
   _rarity: 1
-  _sweepSeconds: 2
-  _goodHalfWidth: 0.2
-  _greatHalfWidth: 0.1
-  _perfectHalfWidth: 0.045
   _sprite: {fileID: 21300000, guid: 0c84a415176fc4d0fa695fe814d83a21, type: 3}
   _previewPrefab: {fileID: 0}

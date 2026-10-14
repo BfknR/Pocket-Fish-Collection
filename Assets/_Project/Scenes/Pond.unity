@@ -316,6 +316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PocketFish.Game::PocketFish.Game.Fishing.PondController
   _tuning: {fileID: 11400000, guid: 82f079e1752ad4d29961dc0f690c718b, type: 2}
+  _balance: {fileID: 11400000, guid: 9e19559b8a4ff41bfa43199b8c5c656a, type: 2}
   _session: {fileID: 1028958785}
   _camera: {fileID: 519420031}
   _revealView: {fileID: 1285485219}

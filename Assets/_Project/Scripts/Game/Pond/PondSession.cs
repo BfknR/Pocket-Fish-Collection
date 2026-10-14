@@ -113,7 +113,7 @@ namespace PocketFish.Game.Fishing
                     Debug.LogWarning($"Pond save references unknown fish '{id}'. Skipping it.");
                     continue;
                 }
-                species.Add(definition.ToDomain(_tuning.MinigameTimeLimitSeconds));
+                species.Add(definition.ToDomain());
             }
 
             _population.Restore(species, save.TimerSeconds);
@@ -123,7 +123,7 @@ namespace PocketFish.Game.Fishing
         /// <summary>Picks a species for a newly spawned fish. Passed to the population as its roll callback.</summary>
         private FishSpecies RollSpecies()
         {
-            return RollFishDefinition().ToDomain(_tuning.MinigameTimeLimitSeconds);
+            return RollFishDefinition().ToDomain();
         }
 
         /// <summary>

@@ -1,11 +1,10 @@
 using PocketFish.Domain.Catch;
-using PocketFish.Domain.Fishing;
 using UnityEngine;
 
 namespace PocketFish.Game.Data
 {
     /// <summary>
-    /// Designer-editable data for one fish species: identity, minigame difficulty and presentation.
+    /// Designer-editable data for one fish species: identity, rarity and presentation.
     /// Converted to the engine-free <see cref="FishSpecies"/> for use by the domain layer.
     /// </summary>
     [CreateAssetMenu(menuName = "PocketFish/Fish Definition", fileName = "Fish_New")]
@@ -14,13 +13,6 @@ namespace PocketFish.Game.Data
         [SerializeField] private string _id;
         [SerializeField] private string _displayName;
         [SerializeField] private Rarity _rarity;
-
-        [Header("Minigame")]
-        [Tooltip("Seconds for the arrow to cross the arc one way. Smaller is faster.")]
-        [SerializeField, Min(0.2f)] private float _sweepSeconds = 2f;
-        [SerializeField, Range(0.01f, 0.5f)] private float _goodHalfWidth = 0.2f;
-        [SerializeField, Range(0.01f, 0.5f)] private float _greatHalfWidth = 0.1f;
-        [SerializeField, Range(0.01f, 0.5f)] private float _perfectHalfWidth = 0.04f;
 
         [Header("Presentation")]
         [SerializeField] private Sprite _sprite;
@@ -38,17 +30,11 @@ namespace PocketFish.Game.Data
         /// <summary>
         /// Builds the engine-free snapshot of this species.
         /// </summary>
-        /// <param name="timeLimitSeconds">Minigame time limit. Passed in from tuning, so it stays the same for every fish.</param>
-        /// <returns>A <see cref="FishSpecies"/> with this definition's minigame difficulty.</returns>
-        public FishSpecies ToDomain(float timeLimitSeconds)
-        {
-            var minigame = new MinigameConfig(_sweepSeconds, timeLimitSeconds,
-                _goodHalfWidth, _greatHalfWidth, _perfectHalfWidth);
-            return new FishSpecies(_id, _displayName, _rarity, minigame);
-        }
+        /// <returns>A <see cref="FishSpecies"/> with this definition's identity and rarity.</returns>
+        public FishSpecies ToDomain() => new FishSpecies(_id, _displayName, _rarity);
 
         /// <summary>
-        /// Editor-only check. Warns about a missing sprite and keeps the target zones nested.
+        /// Editor-only check. Warns about a missing sprite.
         /// </summary>
         private void OnValidate()
         {
@@ -56,9 +42,6 @@ namespace PocketFish.Game.Data
             {
                 Debug.LogWarning($"{name}: no sprite assigned.", this);
             }
-            // Target zones must nest: perfect inside great inside good.
-            _greatHalfWidth = Mathf.Min(_greatHalfWidth, _goodHalfWidth);
-            _perfectHalfWidth = Mathf.Min(_perfectHalfWidth, _greatHalfWidth);
         }
     }
 }

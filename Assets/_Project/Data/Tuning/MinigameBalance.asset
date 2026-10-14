@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44f02ff7afab4003a80bfe130e6db4c, type: 3}
+  m_Name: MinigameBalance
+  m_EditorClassIdentifier: PocketFish.Game::PocketFish.Game.Data.MinigameBalance
+  _commonTaps: 1
+  _uncommonTaps: 2
+  _rareTaps: 3
+  _legendaryTaps: 4
+  _tiers:
+  - SweepSeconds: 1.6
+    PerfectHalfWidth: 0.04
+    GreatHalfWidth: 0.1
+    GoodHalfWidth: 0.18
+    TimeLimitSeconds: 4
+  - SweepSeconds: 1.3
+    PerfectHalfWidth: 0.03
+    GreatHalfWidth: 0.08
+    GoodHalfWidth: 0.15
+    TimeLimitSeconds: 3.5
+  - SweepSeconds: 1.1
+    PerfectHalfWidth: 0.02
+    GreatHalfWidth: 0.06
+    GoodHalfWidth: 0.11
+    TimeLimitSeconds: 3
+  - SweepSeconds: 0.9
+    PerfectHalfWidth: 0.015
+    GreatHalfWidth: 0.04
+    GoodHalfWidth: 0.08
+    TimeLimitSeconds: 2.5
+  _missScore: 0
+  _goodScore: 0.5
+  _greatScore: 0.75
+  _perfectScore: 1
+  _goodMin: 0.4
+  _greatMin: 0.65
+  _perfectMin: 0.85

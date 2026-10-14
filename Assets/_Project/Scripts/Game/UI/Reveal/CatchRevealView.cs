@@ -21,14 +21,15 @@ namespace PocketFish.Game.UI
         /// </summary>
         /// <param name="outcome">The catch to display.</param>
         /// <param name="sprite">The fish's picture. The image is hidden when this is null.</param>
-        public void Show(CatchOutcome outcome, Sprite sprite)
+        /// <param name="averageScore">The minigame's average score, 0 to 1. Shown beside the grade.</param>
+        public void Show(CatchOutcome outcome, Sprite sprite, float averageScore)
         {
             _fishImage.sprite = sprite;
             _fishImage.enabled = sprite != null;
 
             _speciesText.text = outcome.Species.DisplayName;
             _qualityText.text = outcome.Quality.ToString();
-            _gradeText.text = outcome.Grade.ToString();
+            _gradeText.text = $"{outcome.Grade} ({averageScore:P0})";
 
             _root.SetActive(true);
         }

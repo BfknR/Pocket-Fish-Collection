@@ -8,7 +8,7 @@ namespace PocketFish.Game.Data
 {
     /// <summary>
     /// All catch odds live here, so balancing never touches code.
-    /// Also holds the pond settings, the minigame time limit and the shadow scales.
+    /// Also holds the pond settings and the shadow scales.
     /// </summary>
     [CreateAssetMenu(menuName = "PocketFish/Catch Tuning", fileName = "CatchTuning")]
     public sealed class CatchTuning : ScriptableObject
@@ -52,10 +52,6 @@ namespace PocketFish.Game.Data
         /// <summary>The fish that can spawn in the pond, with their weights.</summary>
         public IReadOnlyList<PondEntry> Pond => _pond;
 
-        [Header("Minigame")]
-        [Tooltip("Fixed time before a no-tap Miss. The same for every fish.")]
-        [SerializeField, Min(0.5f)] private float _minigameTimeLimitSeconds = 3f;
-
         [Header("Pond")]
         [SerializeField, Min(1)] private int _pondCapacity = 6;
         [SerializeField, Min(5f)] private float _spawnIntervalSeconds = 60f;
@@ -64,9 +60,6 @@ namespace PocketFish.Game.Data
         [SerializeField, Min(0.1f)] private float _smallShadowScale = 0.6f;
         [SerializeField, Min(0.1f)] private float _mediumShadowScale = 1f;
         [SerializeField, Min(0.1f)] private float _largeShadowScale = 1.6f;
-
-        /// <summary>Seconds before a no-tap Miss. The same for every fish.</summary>
-        public float MinigameTimeLimitSeconds => _minigameTimeLimitSeconds;
 
         /// <summary>Maximum number of fish in the pond at once.</summary>
         public int PondCapacity => _pondCapacity;
@@ -108,6 +101,23 @@ namespace PocketFish.Game.Data
                 case TapGrade.Perfect: return _perfectOdds.ToDomain();
                 default: throw new ArgumentOutOfRangeException(nameof(grade), grade, null);
             }
+        }
+
+        /// <summary>
+        /// Editor-only check. Every odds row needs at least one weight above zero, or the roll would fail.
+        /// </summary>
+        private void OnValidate()
+        {
+            WarnIfEmpty(_missOdds, nameof(_missOdds));
+            WarnIfEmpty(_goodOdds, nameof(_goodOdds));
+            WarnIfEmpty(_greatOdds, nameof(_greatOdds));
+            WarnIfEmpty(_perfectOdds, nameof(_perfectOdds));
+        }
+
+        private void WarnIfEmpty(OddsRow row, string rowName)
+        {
+            if (row.Normal + row.Good + row.Great + row.Perfect <= 0f)
+                Debug.LogError($"{name}: {rowName} has no weight above zero.", this);
         }
 
         /// <summary>
