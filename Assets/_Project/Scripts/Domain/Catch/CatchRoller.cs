@@ -50,7 +50,14 @@ namespace PocketFish.Domain.Catch
             if ((roll -= odds.Normal) < 0f) return Quality.Normal;
             if ((roll -= odds.Good) < 0f) return Quality.Good;
             if ((roll -= odds.Great) < 0f) return Quality.Great;
-            return Quality.Perfect;
+            if (roll - odds.Perfect < 0f) return Quality.Perfect;
+
+            // Float rounding can leave the roll past the last bucket. Fall back to the highest quality
+            // that actually has weight, never to one with zero weight.
+            if (odds.Perfect > 0f) return Quality.Perfect;
+            if (odds.Great > 0f) return Quality.Great;
+            if (odds.Good > 0f) return Quality.Good;
+            return Quality.Normal;
         }
     }
 }
