@@ -52,6 +52,12 @@ namespace PocketFish.Game.Fishing
             else Sync();
         }
 
+        /// <summary>Saves the pond when leaving the scene.</summary>
+        private void OnDestroy()
+        {
+            Save();
+        }
+
         /// <summary>Saves the pond when the app quits.</summary>
         private void OnApplicationQuit()
         {

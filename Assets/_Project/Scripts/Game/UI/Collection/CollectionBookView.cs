@@ -1,12 +1,12 @@
 using PocketFish.Domain.Collection;
 using PocketFish.Game.Data;
-using PocketFish.Game.Fishing;
+using PocketFish.Game.Collection;
 using UnityEngine;
 
 namespace PocketFish.Game.UI
 {
     /// <summary>
-    /// Presentation only. The Collection Book screen: opens over the pond, shows the profile header and
+    /// Presentation only. The Collection Book screen: opens over the aquarium, shows the profile header and
     /// species grid, and opens the detail screen for a tapped species.
     /// </summary>
     public sealed class CollectionBookView : MonoBehaviour
@@ -14,32 +14,25 @@ namespace PocketFish.Game.UI
         private const string PlayerName = "Player";
 
         [SerializeField] private GameObject _root;
-        [SerializeField] private RectTransform _entryButton;
         [SerializeField] private ProfileHeaderView _header;
         [SerializeField] private SpeciesGridView _grid;
         [SerializeField] private SpeciesDetailView _detail;
-        [SerializeField] private PondSession _session;
-        [SerializeField] private SpeciesCatalog _catalog;
+
+        private CollectionSession _collection;
+        private SpeciesCatalog _catalog;
 
         /// <summary>True while the book, or the detail screen over it, is showing.</summary>
         public bool IsOpen => _root.activeSelf;
 
         /// <summary>
-        /// Shows or hides the button that opens the book, such as while a minigame is running.
+        /// Gives the book the collection and catalog it shows. Call once when the scene starts.
         /// </summary>
-        /// <param name="available">True to show the button.</param>
-        public void SetEntryAvailable(bool available) => _entryButton.gameObject.SetActive(available);
-
-        /// <summary>
-        /// Checks whether a screen press landed on the entry button, so the pond can ignore it.
-        /// The canvas is screen space overlay, so no camera is needed.
-        /// </summary>
-        /// <param name="screenPoint">The press position in screen pixels.</param>
-        /// <returns>True if the button is showing and the point is inside it.</returns>
-        public bool IsOverEntryButton(Vector2 screenPoint)
+        /// <param name="collection">The player's collection.</param>
+        /// <param name="catalog">Every species in the game.</param>
+        public void Bind(CollectionSession collection, SpeciesCatalog catalog)
         {
-            return _entryButton.gameObject.activeInHierarchy
-                && RectTransformUtility.RectangleContainsScreenPoint(_entryButton, screenPoint, null);
+            _collection = collection;
+            _catalog = catalog;
         }
 
         /// <summary>Starts hidden and listens for taps on the grid.</summary>
@@ -57,7 +50,7 @@ namespace PocketFish.Game.UI
         /// <summary>Refreshes the header and grid from the current collection and shows the screen.</summary>
         public void Open()
         {
-            var progress = _session.Collection.Progress;
+            var progress = _collection.Progress;
             _header.Bind(ProfileHeaderModel.From(progress, PlayerName));
             _grid.Bind(progress, _catalog);
             _root.SetActive(true);
@@ -73,7 +66,7 @@ namespace PocketFish.Game.UI
         /// <param name="speciesId">Id of the tapped species.</param>
         private void OpenDetail(string speciesId)
         {
-            if (!_session.Collection.Progress.TryGetRecord(speciesId, out SpeciesRecord record)) return;
+            if (!_collection.Progress.TryGetRecord(speciesId, out SpeciesRecord record)) return;
 
             FishDefinition definition = _catalog.Find(speciesId);
             string description = definition != null ? definition.Description : string.Empty;

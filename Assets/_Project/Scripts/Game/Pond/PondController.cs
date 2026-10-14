@@ -21,7 +21,7 @@ namespace PocketFish.Game.Fishing
         [SerializeField] private PondSession _session;
         [SerializeField] private Camera _camera;
         [SerializeField] private CatchRevealView _revealView;
-        [SerializeField] private CollectionBookView _book;
+        [SerializeField] private RectTransform _aquariumButton;
         [SerializeField] private TimerBarView _timerBar;
         [SerializeField] private TimingArcView _arcView;
 
@@ -47,12 +47,9 @@ namespace PocketFish.Game.Fishing
         /// </summary>
         private void Update()
         {
-            // The Collection Book sits over the pond, so the pond ignores input while it is open.
-            if (_book.IsOpen) return;
-
             bool pressed = Pointer.current != null && Pointer.current.press.wasPressedThisFrame;
-            // Pressing the Collection Book button must not also start fishing.
-            if (pressed && _book.IsOverEntryButton(Pointer.current.position.ReadValue())) pressed = false;
+            // Pressing the Aquarium button must not also start fishing.
+            if (pressed && IsOverAquariumButton(Pointer.current.position.ReadValue())) pressed = false;
 
             if (_state == PondState.Idle)
             {
@@ -71,6 +68,13 @@ namespace PocketFish.Game.Fishing
             if (_minigame.CurrentIndex != _shownTapIndex) ShowTap();
             _arcView.SetMarker(_minigame.MarkerPosition);
             _timerBar.SetProgress(_minigame.Progress);
+        }
+
+        /// <summary>Checks whether a screen press landed on the Aquarium button. The canvas is screen space overlay.</summary>
+        private bool IsOverAquariumButton(Vector2 screenPoint)
+        {
+            return _aquariumButton.gameObject.activeInHierarchy
+                && RectTransformUtility.RectangleContainsScreenPoint(_aquariumButton, screenPoint, null);
         }
 
         /// <summary>Checks whether the tap landed on a fish and starts fishing if it did.</summary>
@@ -104,7 +108,7 @@ namespace PocketFish.Game.Fishing
 
             ShowTap();
             _state = PondState.Fishing;
-            _book.SetEntryAvailable(false);
+            _aquariumButton.gameObject.SetActive(false);
         }
 
         /// <summary>Draws the zones and resets the timer for the tap now in play.</summary>
@@ -135,7 +139,7 @@ namespace PocketFish.Game.Fishing
             _session.Save();
 
             _state = PondState.Idle;
-            _book.SetEntryAvailable(true);
+            _aquariumButton.gameObject.SetActive(true);
             _revealView.Show(outcome, _activeDefinition.Sprite, result.AverageScore);
         }
     }
