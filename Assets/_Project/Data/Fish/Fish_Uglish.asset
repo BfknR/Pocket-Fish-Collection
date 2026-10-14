@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c4688c49d2a346e6b182eba73e91a1e, type: 3}
+  m_Name: Fish_Uglish
+  m_EditorClassIdentifier: PocketFish.Game::PocketFish.Game.Data.FishDefinition
+  _id: uglish
+  _displayName: Uglish
+  _rarity: 2
+  _sweepSeconds: 1.6
+  _goodHalfWidth: 0.15
+  _greatHalfWidth: 0.08
+  _perfectHalfWidth: 0.03
+  _sprite: {fileID: 21300000, guid: f992b978e4d0542539322c41c2415ad1, type: 3}
+  _previewPrefab: {fileID: 0}
