@@ -6,6 +6,7 @@ namespace PocketFish.Domain.Fishing
     /// <summary>
     /// Runs a sequence of <see cref="TapMinigame"/> attempts and averages their scores.
     /// Each attempt uses the tier for its position in the sequence, whatever the fish.
+    /// The marker is not reset between taps: the next attempt carries on from where the last one left it.
     /// Time is injected through <see cref="Tick"/>.
     /// </summary>
     public sealed class MultiTapMinigame
@@ -95,7 +96,8 @@ namespace PocketFish.Domain.Fishing
 
             if (_attempts.Count < _tapCount)
             {
-                _current.Begin(_tiers[_attempts.Count]);
+                // The marker carries on from where this tap left it, at the next tier's speed.
+                _current.Begin(_tiers[_attempts.Count], _current.Phase);
                 return;
             }
 

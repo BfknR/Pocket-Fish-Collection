@@ -12,6 +12,7 @@ namespace PocketFish.Domain.Fishing
 
         private MinigameConfig _config;
         private float _elapsed;
+        private float _startPhase;
 
         /// <inheritdoc/>
         public bool IsFinished { get; private set; }
@@ -23,19 +24,26 @@ namespace PocketFish.Domain.Fishing
         public float Progress => IsFinished ? 1f : Math.Min(_elapsed / _config.TimeLimitSeconds, 1f);
 
         /// <summary>Marker position across the bar, 0 to 1. Frozen once the minigame ends.</summary>
-        public float MarkerPosition
-        {
-            get
-            {
-                float cycle = (_elapsed / _config.SweepSeconds) % 2f; // 0 to 2 per round trip
-                return cycle <= 1f ? cycle : 2f - cycle;
-            }
-        }
+        public float MarkerPosition => PositionFor(Phase);
+
+        /// <summary>
+        /// Where the marker is in its round trip, 0 to 2: 0 is the left end, 1 the right end,
+        /// and 2 is back at the left. Unlike speed, it carries over between runs.
+        /// </summary>
+        public float Phase => (_elapsed / _config.SweepSeconds + _startPhase) % 2f;
 
         /// <inheritdoc/>
-        public void Begin(MinigameConfig config)
+        public void Begin(MinigameConfig config) => Begin(config, 0f);
+
+        /// <summary>
+        /// Resets the minigame and starts a new run with the marker already part-way through its sweep.
+        /// </summary>
+        /// <param name="config">Difficulty for this run.</param>
+        /// <param name="startPhase">Where the marker starts, in the units of <see cref="Phase"/>.</param>
+        public void Begin(MinigameConfig config, float startPhase)
         {
             _config = config;
+            _startPhase = startPhase;
             _elapsed = 0f;
             IsFinished = false;
             Result = TapGrade.Miss;
@@ -63,6 +71,9 @@ namespace PocketFish.Domain.Fishing
             float distance = Math.Abs(MarkerPosition - TargetCenter);
             Finish(GradeFor(distance));
         }
+
+        /// <summary>Converts a phase (0 to 2) to a marker position (0 to 1), bouncing back after the right end.</summary>
+        private static float PositionFor(float phase) => phase <= 1f ? phase : 2f - phase;
 
         /// <summary>Maps a distance from the target center to a grade, checking the narrowest zone first.</summary>
         private TapGrade GradeFor(float distanceFromCenter)

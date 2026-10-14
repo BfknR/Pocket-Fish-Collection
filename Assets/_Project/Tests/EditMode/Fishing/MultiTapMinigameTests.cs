@@ -42,14 +42,14 @@ namespace PocketFish.Domain.Tests
             Assert.AreEqual(expected, counts.For(rarity));
         }
 
-        // 2
+        // 2. The marker carries over between taps, so each time is the extra travel from the last tap.
         [Test]
         public void Average_IsExactMeanOfScores()
         {
             var game = Create(4);
-            TapAfter(game, 0.5f);    // Perfect 1
-            TapAfter(game, 0.625f);  // Great 0.75
-            TapAfter(game, 0.75f);   // Good 0.5
+            TapAfter(game, 0.5f);    // marker 0.5   Perfect 1
+            TapAfter(game, 0.125f);  // marker 0.625 Great 0.75
+            TapAfter(game, 0.125f);  // marker 0.75  Good 0.5
             game.Tick(2f);           // timeout 0
 
             Assert.IsTrue(game.IsFinished);
@@ -111,8 +111,8 @@ namespace PocketFish.Domain.Tests
         public void Attempts_AreStoredInOrder()
         {
             var game = Create(3);
-            TapAfter(game, 0.75f);   // Good
-            TapAfter(game, 0.5f);    // Perfect
+            TapAfter(game, 0.75f);   // marker 0.75 Good
+            TapAfter(game, 0.75f);   // marker 0.5 on the way back, Perfect
             game.Tick(2f);           // Miss
 
             var attempts = game.Result.Attempts;
@@ -144,9 +144,42 @@ namespace PocketFish.Domain.Tests
         {
             var game = Create(2);
             TapAfter(game, 0.5f);    // 1
-            TapAfter(game, 0.625f);  // 0.75 -> average 0.875
+            TapAfter(game, 0.125f);  // marker 0.625, 0.75 -> average 0.875
 
             Assert.AreEqual(TapGrade.Perfect, game.Result.FinalGrade);
+        }
+
+        [Test]
+        public void Marker_CarriesOverBetweenTaps()
+        {
+            var game = Create(2);
+            TapAfter(game, 0.5f);
+
+            Assert.AreEqual(0.5f, game.MarkerPosition);  // not back at 0
+            game.Tick(0.25f);
+            Assert.AreEqual(0.75f, game.MarkerPosition);
+        }
+
+        [Test]
+        public void Marker_KeepsItsDirectionBetweenTaps()
+        {
+            var game = Create(2);
+            TapAfter(game, 1.25f);                       // marker 0.75, heading back
+
+            Assert.AreEqual(0.75f, game.MarkerPosition);
+            game.Tick(0.25f);
+            Assert.AreEqual(0.5f, game.MarkerPosition);
+        }
+
+        [Test]
+        public void Marker_CarriesOverIntoATierWithAnotherSpeed()
+        {
+            var slow = new MinigameConfig(2f, 2f, 0.25f, 0.125f, 0.0625f);
+            var game = Create(2, Tier, slow);
+            TapAfter(game, 0.5f);                        // marker 0.5
+
+            game.Tick(0.5f);                             // half a second covers 0.25 at the slower sweep
+            Assert.AreEqual(0.75f, game.MarkerPosition);
         }
 
         [Test]
