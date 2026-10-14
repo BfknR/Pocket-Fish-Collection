@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd4cfd79fdbc4a9eb04d7c1dcfc2a3a9, type: 3}
+  m_Name: SpeciesCatalog
+  m_EditorClassIdentifier: PocketFish.Game::PocketFish.Game.Data.SpeciesCatalog
+  _species:
+  - {fileID: 11400000, guid: 448e7c8f854974806b90dcd725743b65, type: 2}
+  - {fileID: 11400000, guid: 0ba9354ab1fd94b5bbd9077d04fcf0c1, type: 2}
+  - {fileID: 11400000, guid: d4d9cbb5066af4b68b0efb73526a732c, type: 2}
+  - {fileID: 11400000, guid: ea6c20713c0e14241bc7237136d3a14a, type: 2}
+  - {fileID: 11400000, guid: e70dee7f0ef8c446a9c7e7611070a09f, type: 2}
+  - {fileID: 11400000, guid: b16b2a6c395d4453989cff5e03c34b62, type: 2}
+  _placeholderSprite: {fileID: 21300000, guid: 2d4de515ebc8040668007e0e719693cf, type: 3}

@@ -21,6 +21,7 @@ namespace PocketFish.Game.Fishing
         [SerializeField] private PondSession _session;
         [SerializeField] private Camera _camera;
         [SerializeField] private CatchRevealView _revealView;
+        [SerializeField] private CollectionBookView _book;
         [SerializeField] private TimerBarView _timerBar;
         [SerializeField] private TimingArcView _arcView;
 
@@ -46,7 +47,12 @@ namespace PocketFish.Game.Fishing
         /// </summary>
         private void Update()
         {
+            // The Collection Book sits over the pond, so the pond ignores input while it is open.
+            if (_book.IsOpen) return;
+
             bool pressed = Pointer.current != null && Pointer.current.press.wasPressedThisFrame;
+            // Pressing the Collection Book button must not also start fishing.
+            if (pressed && _book.IsOverEntryButton(Pointer.current.position.ReadValue())) pressed = false;
 
             if (_state == PondState.Idle)
             {
@@ -98,6 +104,7 @@ namespace PocketFish.Game.Fishing
 
             ShowTap();
             _state = PondState.Fishing;
+            _book.SetEntryAvailable(false);
         }
 
         /// <summary>Draws the zones and resets the timer for the tap now in play.</summary>
@@ -123,10 +130,12 @@ namespace PocketFish.Game.Fishing
             _timerBar.Hide();
 
             // Every resolved attempt catches the fish, including a miss.
+            _session.Collection.Record(outcome);
             _session.Population.Remove(_activeView.Fish.InstanceId);
             _session.Save();
 
             _state = PondState.Idle;
+            _book.SetEntryAvailable(true);
             _revealView.Show(outcome, _activeDefinition.Sprite, result.AverageScore);
         }
     }

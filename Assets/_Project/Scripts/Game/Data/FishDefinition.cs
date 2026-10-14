@@ -13,6 +13,7 @@ namespace PocketFish.Game.Data
         [SerializeField] private string _id;
         [SerializeField] private string _displayName;
         [SerializeField] private Rarity _rarity;
+        [SerializeField, TextArea] private string _description = "Here goes the description";
 
         [Header("Presentation")]
         [SerializeField] private Sprite _sprite;
@@ -20,6 +21,9 @@ namespace PocketFish.Game.Data
 
         /// <summary>The fish's picture, shown on the catch reveal.</summary>
         public Sprite Sprite => _sprite;
+
+        /// <summary>Text shown on the species' page in the Collection Book.</summary>
+        public string Description => _description;
 
         /// <summary>Stable identifier, used to match saved pond data back to this definition.</summary>
         public string Id => _id;

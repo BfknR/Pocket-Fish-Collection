@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using PocketFish.Domain.Catch;
 using PocketFish.Domain.Fishing;
+using PocketFish.Game.Collection;
 using PocketFish.Game.Data;
 using PocketFish.Game.Persistence;
 using UnityEngine;
@@ -14,18 +15,25 @@ namespace PocketFish.Game.Fishing
     public sealed class PondSession : MonoBehaviour
     {
         [SerializeField] private CatchTuning _tuning;
+        [SerializeField] private SpeciesCatalog _catalog;
 
         private PondPopulation _population;
         private System.Random _random;
         private long _lastSyncTicks;
+        private CollectionSession _collection;
 
         /// <summary>The live pond. Other components read and modify it through this.</summary>
         public PondPopulation Population => _population;
 
-        /// <summary>Builds the pond, restores any save, then credits time spent away.</summary>
+        /// <summary>The player's collection, rebuilt from the saved catch log.</summary>
+        public CollectionSession Collection => _collection;
+
+        /// <summary>Builds the collection and the pond, restores any save, then credits time spent away.</summary>
         private void Awake()
         {
             _random = new System.Random();
+            _collection = new CollectionSession(_catalog.ToDomainList(), CatchLogStore.Load());
+            WarnAboutPondFishMissingFromCatalog();
             _population = new PondPopulation(_tuning.PondCapacity, _tuning.SpawnIntervalSeconds, RollSpecies);
             Restore();
             Sync();
@@ -118,6 +126,21 @@ namespace PocketFish.Game.Fishing
 
             _population.Restore(species, save.TimerSeconds);
             _lastSyncTicks = save.SavedUtcTicks;
+        }
+
+        /// <summary>
+        /// Warns about any fish in this pond's table that the catalog doesn't list.
+        /// Catching such a fish couldn't be recorded in the Collection Book.
+        /// </summary>
+        private void WarnAboutPondFishMissingFromCatalog()
+        {
+            foreach (var entry in _tuning.PondEntries)
+            {
+                if (entry.Fish != null && !_catalog.Contains(entry.Fish.Id))
+                {
+                    Debug.LogWarning($"Pond fish '{entry.Fish.Id}' is not in the species catalog, so its catches won't be recorded.");
+                }
+            }
         }
 
         /// <summary>Picks a species for a newly spawned fish. Passed to the population as its roll callback.</summary>

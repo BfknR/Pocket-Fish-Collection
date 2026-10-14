@@ -15,5 +15,6 @@ MonoBehaviour:
   _id: selfish
   _displayName: Selfish
   _rarity: 2
+  _description: Here goes the description
   _sprite: {fileID: 21300000, guid: fa303093c56a649bca73a154aca3346a, type: 3}
   _previewPrefab: {fileID: 0}

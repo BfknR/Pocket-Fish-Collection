@@ -15,5 +15,6 @@ MonoBehaviour:
   _id: saltbone
   _displayName: Saltbone
   _rarity: 2
+  _description: Here goes the description
   _sprite: {fileID: 21300000, guid: 7302233359d234ade8989cc236b968e2, type: 3}
   _previewPrefab: {fileID: 0}

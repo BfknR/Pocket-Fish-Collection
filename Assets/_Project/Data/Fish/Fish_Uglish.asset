@@ -15,5 +15,6 @@ MonoBehaviour:
   _id: uglish
   _displayName: Uglish
   _rarity: 2
+  _description: Here goes the description
   _sprite: {fileID: 21300000, guid: f992b978e4d0542539322c41c2415ad1, type: 3}
   _previewPrefab: {fileID: 0}

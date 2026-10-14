@@ -1,0 +1,21 @@
+{
+    "name": "PocketFish.Game.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f7f5527518d8c4f4e8f2892b6aabc000",
+        "GUID:f8d0a309e206d46f0bc1e7a7980003ec",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -15,5 +15,6 @@ MonoBehaviour:
   _id: catfish
   _displayName: Catfish
   _rarity: 0
+  _description: Here goes the description
   _sprite: {fileID: 21300000, guid: 8416bf231e5184b8db4af465b57c08d3, type: 3}
   _previewPrefab: {fileID: 0}

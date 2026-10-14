@@ -15,5 +15,6 @@ MonoBehaviour:
   _id: shieldish
   _displayName: Shieldish
   _rarity: 2
+  _description: Here goes the description
   _sprite: {fileID: 21300000, guid: 9e12bf702e7aa4f8d8f976610ce88be9, type: 3}
   _previewPrefab: {fileID: 0}
