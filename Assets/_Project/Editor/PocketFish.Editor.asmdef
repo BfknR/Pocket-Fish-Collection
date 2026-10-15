@@ -1,0 +1,19 @@
+{
+    "name": "PocketFish.Editor",
+    "rootNamespace": "PocketFish.Editor",
+    "references": [
+        "PocketFish.Domain",
+        "PocketFish.Game"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

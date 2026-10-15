@@ -16,12 +16,12 @@ namespace PocketFish.Game.Fishing
         /// <summary>Whether the player is waiting to pick a fish or is in the minigame.</summary>
         private enum PondState { Idle, Fishing }
 
-        [SerializeField] private CatchTuning _tuning;
         [SerializeField] private MinigameBalance _balance;
         [SerializeField] private PondSession _session;
         [SerializeField] private Camera _camera;
         [SerializeField] private CatchRevealView _revealView;
         [SerializeField] private RectTransform _aquariumButton;
+        [SerializeField] private CoinCounterView _coins;
         [SerializeField] private TimerBarView _timerBar;
         [SerializeField] private TimingArcView _arcView;
 
@@ -39,6 +39,12 @@ namespace PocketFish.Game.Fishing
             _revealView.Hide();
             _timerBar.Hide();
             _arcView.Hide();
+        }
+
+        /// <summary>Shows the coin counter. Done in Start because the session builds the progress in its Awake.</summary>
+        private void Start()
+        {
+            _coins.Bind(_session.Progress);
         }
 
         /// <summary>
@@ -127,7 +133,7 @@ namespace PocketFish.Game.Fishing
         {
             MinigameResult result = _minigame.Result;
             TapGrade grade = result.FinalGrade;
-            Quality quality = CatchRoller.PickQuality(_tuning.OddsFor(grade), _rng);
+            Quality quality = CatchRoller.PickQuality(_session.Tuning.OddsFor(grade), _rng);
             var outcome = new CatchOutcome(_activeSpecies, grade, quality);
 
             _arcView.Hide();
@@ -135,6 +141,7 @@ namespace PocketFish.Game.Fishing
 
             // Every resolved attempt catches the fish, including a miss.
             _session.Collection.Record(outcome);
+            _session.AwardCoins(outcome);
             _session.Population.Remove(_activeView.Fish.InstanceId);
             _session.Save();
 

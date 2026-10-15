@@ -5,22 +5,37 @@ using PocketFish.Domain.Fishing;
 using PocketFish.Game.Collection;
 using PocketFish.Game.Data;
 using PocketFish.Game.Persistence;
+using PocketFish.Game.Progression;
+using PocketFish.Domain.Progression;
 using UnityEngine;
 
 namespace PocketFish.Game.Fishing
 {
     /// <summary>
     /// Owns the pond's fish: spawns them over real time, saves them, and restores them on launch.
+    /// Which pond it is depends on the aquarium the player has selected.
     /// </summary>
     public sealed class PondSession : MonoBehaviour
     {
-        [SerializeField] private CatchTuning _tuning;
+        [SerializeField] private AquariumCatalog _aquariums;
         [SerializeField] private SpeciesCatalog _catalog;
+
+        private CatchTuning _tuning;
+        private string _pondId;
+        private bool _isFirstPond;
+        private PlayerProgress _progress;
+        private CoinRewardTable _rewards;
 
         private PondPopulation _population;
         private System.Random _random;
         private long _lastSyncTicks;
         private CollectionSession _collection;
+
+        /// <summary>Fish, odds and spawn settings of the selected aquarium's pond.</summary>
+        public CatchTuning Tuning => _tuning;
+
+        /// <summary>The player's coins and aquarium progression.</summary>
+        public PlayerProgress Progress => _progress;
 
         /// <summary>The live pond. Other components read and modify it through this.</summary>
         public PondPopulation Population => _population;
@@ -32,6 +47,12 @@ namespace PocketFish.Game.Fishing
         private void Awake()
         {
             _random = new System.Random();
+            _progress = ProgressSession.Get(_aquariums);
+            _rewards = _aquariums.Economy.ToDomain();
+            AquariumDefinition aquarium = _aquariums.Aquariums[_progress.SelectedIndex];
+            _tuning = aquarium.Pond;
+            _pondId = aquarium.Id;
+            _isFirstPond = _progress.SelectedIndex == 0;
             _collection = new CollectionSession(_catalog.ToDomainList(), CatchLogStore.Load());
             WarnAboutPondFishMissingFromCatalog();
             _population = new PondPopulation(_tuning.PondCapacity, _tuning.SpawnIntervalSeconds, RollSpecies);
@@ -92,7 +113,20 @@ namespace PocketFish.Game.Fishing
                 data.FishIds.Add(fish.Species.Id);
             }
 
-            PondSaveStore.Save(data);
+            PondSaveStore.Save(data, _pondId);
+        }
+
+        /// <summary>
+        /// Pays the player for a catch and saves their progress.
+        /// </summary>
+        /// <param name="outcome">The resolved catch.</param>
+        /// <returns>The coins the catch was worth.</returns>
+        public int AwardCoins(CatchOutcome outcome)
+        {
+            int coins = _rewards.For(outcome.Species.Rarity, outcome.Quality);
+            _progress.AddCoins(coins);
+            ProgressSession.Save();
+            return coins;
         }
 
         /// <summary>
@@ -111,7 +145,7 @@ namespace PocketFish.Game.Fishing
         /// </summary>
         private void Restore()
         {
-            PondSaveData save = PondSaveStore.Load();
+            PondSaveData save = PondSaveStore.Load(_pondId, _isFirstPond);
             if (save == null)
             {
                 _lastSyncTicks = 0; // first launch: the timer starts now

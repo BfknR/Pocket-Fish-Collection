@@ -1,15 +1,18 @@
+using System.Collections.Generic;
+using PocketFish.Domain.Progression;
 using PocketFish.Game.Collection;
 using PocketFish.Game.Data;
 using PocketFish.Game.Persistence;
+using PocketFish.Game.Progression;
 using PocketFish.Game.UI;
 using UnityEngine;
 
 namespace PocketFish.Game.Aquarium
 {
     /// <summary>
-    /// The lobby scene the game opens on. Loads the player's collection from the saved catch log,
-    /// hands it to the Collection Book, and fills the tank with randomly chosen fish.
-    /// The Go Fish and Collection buttons are wired in the scene.
+    /// The lobby scene the game opens on. Loads the player's collection and progress, shows the selected
+    /// aquarium's fish swimming in the tank, and wires up the coin counter, aquarium selector and upgrade panel.
+    /// The Go Fish, Collection and Upgrades buttons are wired in the scene.
     /// </summary>
     public sealed class AquariumController : MonoBehaviour
     {
@@ -17,12 +20,15 @@ namespace PocketFish.Game.Aquarium
         private const float EdgeMargin = 1f;
 
         [SerializeField] private SpeciesCatalog _catalog;
+        [SerializeField] private AquariumCatalog _aquariums;
         [SerializeField] private CollectionBookView _book;
+        [SerializeField] private CoinCounterView _coins;
+        [SerializeField] private AquariumSelectorView _selector;
+        [SerializeField] private UpgradePanelView _upgrades;
         [SerializeField] private Camera _camera;
 
         [Header("Tank")]
         [SerializeField, Min(0)] private int _fishCount = 8;
-
         [Tooltip("Min and max swimming speed in world units per second. Each fish picks its own.")]
         [SerializeField] private Vector2 _speedRange = new Vector2(0.5f, 1.4f);
 
@@ -31,23 +37,52 @@ namespace PocketFish.Game.Aquarium
         [SerializeField] private Color _deepestTint = new Color(0.45f, 0.65f, 0.85f);
         [SerializeField] private Vector2 _depthSpeedRange = new Vector2(0.03f, 0.1f);
 
+        private readonly List<GameObject> _fish = new List<GameObject>();
+        private PlayerProgress _progress;
+        private int _populatedFor = -1;
+
         private void Awake()
         {
             var collection = new CollectionSession(_catalog.ToDomainList(), CatchLogStore.Load());
             _book.Bind(collection, _catalog);
-            PopulateTank();
+
+            _progress = ProgressSession.Get(_aquariums);
+            _coins.Bind(_progress);
+            _selector.Bind(_progress, _aquariums);
+            _upgrades.Bind(_progress, _aquariums);
+
+            _progress.Changed += OnProgressChanged;
+            Populate();
         }
 
-        /// <summary>Fills the tank with <see cref="_fishCount"/> fish, each a random species from the catalog.</summary>
-        private void PopulateTank()
+        private void OnDestroy()
         {
-            var species = new System.Collections.Generic.List<Sprite>();
-            foreach (FishDefinition definition in _catalog.Species)
+            if (_progress != null) _progress.Changed -= OnProgressChanged;
+        }
+
+        /// <summary>Swaps the tank's fish when the player switches aquarium. Saves the choice.</summary>
+        private void OnProgressChanged()
+        {
+            if (_progress.SelectedIndex == _populatedFor) return;
+
+            Populate();
+            ProgressSession.Save();
+        }
+
+        /// <summary>Fills the tank with <see cref="_fishCount"/> fish, each a random one from the selected aquarium's pond.</summary>
+        private void Populate()
+        {
+            foreach (GameObject fish in _fish) Destroy(fish);
+            _fish.Clear();
+
+            _populatedFor = _progress.SelectedIndex;
+            var sprites = new List<Sprite>();
+            foreach (CatchTuning.PondEntry entry in _aquariums.Aquariums[_populatedFor].Pond.PondEntries)
             {
-                Sprite sprite = _catalog.SpriteFor(definition);
-                if (sprite != null) species.Add(sprite);
+                Sprite sprite = entry.Fish != null ? _catalog.SpriteFor(entry.Fish) : null;
+                if (sprite != null) sprites.Add(sprite);
             }
-            if (species.Count == 0) return;
+            if (sprites.Count == 0) return;
 
             float halfHeight = _camera.orthographicSize;
             float halfWidth = halfHeight * _camera.aspect;
@@ -62,7 +97,8 @@ namespace PocketFish.Game.Aquarium
                 go.transform.SetParent(transform, false);
                 go.AddComponent<SpriteRenderer>();
                 go.AddComponent<AquariumFish>().Initialize(
-                    species[Random.Range(0, species.Count)], bounds, _speedRange, _deepestScale, _deepestTint, _depthSpeedRange);
+                    sprites[Random.Range(0, sprites.Count)], bounds, _speedRange, _deepestScale, _deepestTint, _depthSpeedRange);
+                _fish.Add(go);
             }
         }
     }

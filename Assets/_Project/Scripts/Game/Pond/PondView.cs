@@ -14,7 +14,6 @@ namespace PocketFish.Game.Fishing
         [SerializeField] private PondSession _session;
         [SerializeField] private FishView _fishPrefab;
         [SerializeField] private Vector2 _areaSize = new Vector2(8f, 6f);
-        [SerializeField] private CatchTuning _tuning;
 
         private readonly Dictionary<int, FishView> _views = new Dictionary<int, FishView>();
         private readonly HashSet<int> _present = new HashSet<int>();
@@ -30,7 +29,7 @@ namespace PocketFish.Game.Fishing
 
                 FishDefinition definition = _session.DefinitionFor(fish);
                 FishView view = Instantiate(_fishPrefab, transform);
-                view.Initialize(fish, _tuning.ShadowScaleFor(definition.ShadowSize), Bounds(), RandomPoint());
+                view.Initialize(fish, _session.Tuning.ShadowScaleFor(definition.ShadowSize), Bounds(), RandomPoint());
                 _views.Add(fish.InstanceId, view);
             }
             List<int> gone = new List<int>();
