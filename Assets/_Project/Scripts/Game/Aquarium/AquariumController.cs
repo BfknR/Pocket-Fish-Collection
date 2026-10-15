@@ -24,8 +24,11 @@ namespace PocketFish.Game.Aquarium
         [SerializeField] private CollectionBookView _book;
         [SerializeField] private CoinCounterView _coins;
         [SerializeField] private AquariumSelectorView _selector;
+        [SerializeField] private PondCounterView _pondCounter;
         [SerializeField] private UpgradePanelView _upgrades;
         [SerializeField] private Camera _camera;
+        [Tooltip("Where the swimming fish are created. Falls back to this object if empty.")]
+        [SerializeField] private Transform _fishParent;
 
         [Header("Tank")]
         [SerializeField, Min(0)] private int _fishCount = 8;
@@ -49,6 +52,7 @@ namespace PocketFish.Game.Aquarium
             _progress = ProgressSession.Get(_aquariums);
             _coins.Bind(_progress);
             _selector.Bind(_progress, _aquariums);
+            _pondCounter.Bind(_progress, _aquariums);
             _upgrades.Bind(_progress, _aquariums);
 
             _progress.Changed += OnProgressChanged;
@@ -94,7 +98,7 @@ namespace PocketFish.Game.Aquarium
             for (int i = 0; i < _fishCount; i++)
             {
                 var go = new GameObject("Fish");
-                go.transform.SetParent(transform, false);
+                go.transform.SetParent(_fishParent != null ? _fishParent : transform, false);
                 go.AddComponent<SpriteRenderer>();
                 go.AddComponent<AquariumFish>().Initialize(
                     sprites[Random.Range(0, sprites.Count)], bounds, _speedRange, _deepestScale, _deepestTint, _depthSpeedRange);

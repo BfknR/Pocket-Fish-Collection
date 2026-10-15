@@ -10,7 +10,7 @@ Namespaces follow the assembly and feature (`PocketFish.Domain.Fishing`), not th
 | `Catch/Quality` | `Quality`, `QualityOdds`, the weighted roll (`CatchRoller`), `CatchOutcome` |
 | `Fishing/TapMinigame` | The single-tap timing minigame, its config and `TapGrade` |
 | `Fishing/MultiTap` | `MultiTapMinigame`: a sequence of taps, scores, average and final grade |
-| `Pond` | Pond population and time |
+| `Pond` | Pond population, time and `PondForecast` (fish count from a saved pond) |
 | `Progression` | `PlayerProgress` (coins, aquariums, upgrade levels), `CoinRewardTable` |
 
 ## Game (Unity)
