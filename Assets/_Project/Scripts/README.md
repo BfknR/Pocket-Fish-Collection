@@ -16,7 +16,7 @@ Namespaces follow the assembly and feature (`PocketFish.Domain.Fishing`), not th
 | Folder | Holds |
 |---|---|
 | `Data` | ScriptableObjects: `FishDefinition`, `CatchTuning` |
-| `Aquarium` | The lobby scene: loads the collection for the book |
+| `Aquarium` | The lobby: loads the collection for the book and fills the tank with a set number of random fish |
 | `Navigation` | `SceneNames`, `SceneButton` |
 | `Pond` | Scene controller, session and views for the pond and its fish |
 | `UI/Minigame` | Timer bar and timing arc |
