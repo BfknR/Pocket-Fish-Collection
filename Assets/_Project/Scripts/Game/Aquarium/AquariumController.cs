@@ -23,6 +23,14 @@ namespace PocketFish.Game.Aquarium
         [Header("Tank")]
         [SerializeField, Min(0)] private int _fishCount = 8;
 
+        [Tooltip("Min and max swimming speed in world units per second. Each fish picks its own.")]
+        [SerializeField] private Vector2 _speedRange = new Vector2(0.5f, 1.4f);
+
+        [Header("Depth")]
+        [SerializeField, Range(0.1f, 1f)] private float _deepestScale = 0.45f;
+        [SerializeField] private Color _deepestTint = new Color(0.45f, 0.65f, 0.85f);
+        [SerializeField] private Vector2 _depthSpeedRange = new Vector2(0.03f, 0.1f);
+
         private void Awake()
         {
             var collection = new CollectionSession(_catalog.ToDomainList(), CatchLogStore.Load());
@@ -53,7 +61,8 @@ namespace PocketFish.Game.Aquarium
                 var go = new GameObject("Fish");
                 go.transform.SetParent(transform, false);
                 go.AddComponent<SpriteRenderer>();
-                go.AddComponent<AquariumFish>().Initialize(species[Random.Range(0, species.Count)], bounds);
+                go.AddComponent<AquariumFish>().Initialize(
+                    species[Random.Range(0, species.Count)], bounds, _speedRange, _deepestScale, _deepestTint, _depthSpeedRange);
             }
         }
     }

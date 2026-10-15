@@ -167,6 +167,10 @@ MonoBehaviour:
   _book: {fileID: 1079992786}
   _camera: {fileID: 730882757}
   _fishCount: 8
+  _speedRange: {x: 0.5, y: 1.4}
+  _deepestScale: 0.45
+  _deepestTint: {r: 0.45, g: 0.65, b: 0.85, a: 1}
+  _depthSpeedRange: {x: 0.03, y: 0.1}
 --- !u!1001 &395979141
 PrefabInstance:
   m_ObjectHideFlags: 0

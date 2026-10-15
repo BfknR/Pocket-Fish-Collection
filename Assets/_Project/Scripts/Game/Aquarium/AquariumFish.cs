@@ -4,7 +4,8 @@ namespace PocketFish.Game.Aquarium
 {
     /// <summary>
     /// A fish sprite swimming back and forth inside a rectangle. It turns around at the edges,
-    /// drifts up and down toward random heights, and bobs gently.
+    /// drifts up and down toward random heights, and bobs gently. It also drifts toward and away from
+    /// the viewer, getting smaller and tinted as it goes deeper.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public sealed class AquariumFish : MonoBehaviour
@@ -22,13 +23,23 @@ namespace PocketFish.Game.Aquarium
         private float _bobSpeed;
         private float _bobPhase;
         private float _y;
+        private float _baseScale;
+        private float _depth;
+        private float _targetDepth;
+        private float _depthSpeed;
+        private float _deepestScale;
+        private Color _deepestTint;
 
         /// <summary>
         /// Puts the fish in the tank and starts it swimming.
         /// </summary>
         /// <param name="sprite">The fish's art.</param>
         /// <param name="bounds">World-space area the fish stays inside.</param>
-        public void Initialize(Sprite sprite, Rect bounds)
+        /// <param name="speedRange">Min and max swimming speed in world units per second, picked per fish.</param>
+        /// <param name="deepestScale">Size multiplier at the very back of the tank. The front is full size.</param>
+        /// <param name="deepestTint">Colour at the very back. The front is untinted.</param>
+        /// <param name="depthSpeedRange">Min and max depth change per second, picked per fish. Depth runs from 0 to 1.</param>
+        public void Initialize(Sprite sprite, Rect bounds, Vector2 speedRange, float deepestScale, Color deepestTint, Vector2 depthSpeedRange)
         {
             _renderer = GetComponent<SpriteRenderer>();
             _renderer.sprite = sprite;
@@ -36,10 +47,16 @@ namespace PocketFish.Game.Aquarium
 
             float width = sprite.bounds.size.x;
             float targetWidth = Random.Range(1.4f, 2.2f);
-            transform.localScale = Vector3.one * (width > 0f ? targetWidth / width : 1f);
+            _baseScale = width > 0f ? targetWidth / width : 1f;
+            _deepestScale = deepestScale;
+            _deepestTint = deepestTint;
+            _depth = Random.value;
+            _targetDepth = _depth;
+            _depthSpeed = Random.Range(depthSpeedRange.x, depthSpeedRange.y);
+            ApplyDepth();
 
             _direction = Random.value < 0.5f ? -1f : 1f;
-            _speed = Random.Range(0.5f, 1.4f);
+            _speed = Random.Range(speedRange.x, speedRange.y);
             _driftSpeed = Random.Range(0.1f, 0.3f);
             _bobAmount = Random.Range(0.05f, 0.15f);
             _bobSpeed = Random.Range(0.8f, 1.6f);
@@ -63,8 +80,20 @@ namespace PocketFish.Game.Aquarium
             _y = Mathf.MoveTowards(_y, _targetY, _driftSpeed * dt);
             if (Mathf.Approximately(_y, _targetY)) _targetY = Random.Range(_bounds.yMin, _bounds.yMax);
 
+            _depth = Mathf.MoveTowards(_depth, _targetDepth, _depthSpeed * dt);
+            if (Mathf.Approximately(_depth, _targetDepth)) _targetDepth = Random.value;
+            ApplyDepth();
+
             position.y = _y + Mathf.Sin(Time.time * _bobSpeed + _bobPhase) * _bobAmount;
             transform.position = position;
+        }
+
+        /// <summary>Deeper fish are smaller and tinted, and draw behind the ones in front.</summary>
+        private void ApplyDepth()
+        {
+            transform.localScale = Vector3.one * (_baseScale * Mathf.Lerp(1f, _deepestScale, _depth));
+            _renderer.color = Color.Lerp(Color.white, _deepestTint, _depth);
+            _renderer.sortingOrder = -Mathf.RoundToInt(_depth * 100f);
         }
 
         /// <summary>Swims back the other way from the edge.</summary>
