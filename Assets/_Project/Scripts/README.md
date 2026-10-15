@@ -16,7 +16,7 @@ Namespaces follow the assembly and feature (`PocketFish.Domain.Fishing`), not th
 ## Game (Unity)
 | Folder | Holds |
 |---|---|
-| `Data` | ScriptableObjects: `FishDefinition`, `CatchTuning`, `AquariumDefinition`, `AquariumCatalog`, `EconomyTuning` |
+| `Data` | ScriptableObjects: `FishDefinition`, `PondDefinition` (one per pond), `CatchTuning` (one, shared), `AquariumDefinition`, `AquariumCatalog`, `EconomyTuning` |
 | `Progression` | `ProgressSession`: the player's progress, shared by the Aquarium and Pond scenes |
 | `Aquarium` | The lobby: loads the collection for the book and fills the tank with a set number of random fish |
 | `Navigation` | `SceneNames`, `SceneButton` |

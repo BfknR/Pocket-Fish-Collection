@@ -1265,6 +1265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PocketFish.Game::PocketFish.Game.Fishing.PondSession
   _aquariums: {fileID: 11400000, guid: 893bbbf578b6a4187a6727f30fd37166, type: 2}
   _catalog: {fileID: 11400000, guid: f841edcf68d347acb1956331332b6928, type: 2}
+  _tuning: {fileID: 11400000, guid: 82f079e1752ad4d29961dc0f690c718b, type: 2}
 --- !u!4 &1028958786
 Transform:
   m_ObjectHideFlags: 0

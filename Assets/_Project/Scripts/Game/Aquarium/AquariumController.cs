@@ -77,7 +77,7 @@ namespace PocketFish.Game.Aquarium
 
             _populatedFor = _progress.SelectedIndex;
             var sprites = new List<Sprite>();
-            foreach (CatchTuning.PondEntry entry in _aquariums.Aquariums[_populatedFor].Pond.PondEntries)
+            foreach (PondDefinition.Entry entry in _aquariums.Aquariums[_populatedFor].Pond.Fish)
             {
                 Sprite sprite = entry.Fish != null ? _catalog.SpriteFor(entry.Fish) : null;
                 if (sprite != null) sprites.Add(sprite);

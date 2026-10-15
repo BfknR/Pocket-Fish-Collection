@@ -37,8 +37,8 @@ namespace PocketFish.Game.Data
         [SerializeField, Min(0)] private int _cost;
 
         [Header("Pond")]
-        [Tooltip("The fish, odds and spawn settings of the pond this aquarium gives access to.")]
-        [SerializeField] private CatchTuning _pond;
+        [Tooltip("The pond this aquarium gives access to: its fish, capacity and spawn rate.")]
+        [SerializeField] private PondDefinition _pond;
 
         [Header("Upgrades")]
         [SerializeField] private UpgradeItem[] _upgrades;
@@ -53,7 +53,7 @@ namespace PocketFish.Game.Data
         public int Cost => _cost;
 
         /// <summary>The pond this aquarium gives access to.</summary>
-        public CatchTuning Pond => _pond;
+        public PondDefinition Pond => _pond;
 
         /// <summary>The upgradable items.</summary>
         public IReadOnlyList<UpgradeItem> Upgrades => _upgrades;

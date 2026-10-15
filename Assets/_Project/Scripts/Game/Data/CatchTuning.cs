@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using PocketFish.Domain.Catch;
 using PocketFish.Domain.Fishing;
 using UnityEngine;
@@ -7,25 +6,12 @@ using UnityEngine;
 namespace PocketFish.Game.Data
 {
     /// <summary>
-    /// All catch odds live here, so balancing never touches code.
-    /// Also holds the pond settings and the shadow scales.
+    /// All catch odds live here, so balancing never touches code. Also holds the shadow scales.
+    /// One asset shared by every pond. What differs per pond lives in <see cref="PondDefinition"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "PocketFish/Catch Tuning", fileName = "CatchTuning")]
     public sealed class CatchTuning : ScriptableObject
     {
-        /// <summary>
-        /// A fish that can appear in the pond, with its relative spawn weight.
-        /// </summary>
-        [Serializable]
-        public struct PondEntry
-        {
-            /// <summary>The fish that can spawn.</summary>
-            public FishDefinition Fish;
-
-            /// <summary>Relative chance of spawning. Doesn't need to sum to any particular value.</summary>
-            [Min(0f)] public float Weight;
-        }
-
         /// <summary>
         /// Editable quality weights for one tap grade.
         /// </summary>
@@ -41,49 +27,16 @@ namespace PocketFish.Game.Data
             public QualityOdds ToDomain() => new QualityOdds(Normal, Good, Great, Perfect);
         }
 
-        [SerializeField] private PondEntry[] _pond;
-
         [Header("Quality Odds by Tap Grade")]
         [SerializeField] private OddsRow _missOdds;
         [SerializeField] private OddsRow _goodOdds;
         [SerializeField] private OddsRow _greatOdds;
         [SerializeField] private OddsRow _perfectOdds;
 
-        /// <summary>The fish that can spawn in the pond, with their weights.</summary>
-        public IReadOnlyList<PondEntry> Pond => _pond;
-
-        [Header("Pond")]
-        [SerializeField, Min(1)] private int _pondCapacity = 6;
-        [SerializeField, Min(5f)] private float _spawnIntervalSeconds = 60f;
-
         [Header("Shadow Sizes")]
         [SerializeField, Min(0.1f)] private float _smallShadowScale = 0.6f;
         [SerializeField, Min(0.1f)] private float _mediumShadowScale = 1f;
         [SerializeField, Min(0.1f)] private float _largeShadowScale = 1.6f;
-
-        /// <summary>Maximum number of fish in the pond at once.</summary>
-        public int PondCapacity => _pondCapacity;
-
-        /// <summary>Seconds between fish spawns.</summary>
-        public float SpawnIntervalSeconds => _spawnIntervalSeconds;
-
-        /// <summary>The fish that can spawn in the pond, with their weights.</summary>
-        public IReadOnlyList<PondEntry> PondEntries => _pond;
-
-        /// <summary>
-        /// Looks up a fish in the pond table by its id.
-        /// </summary>
-        /// <param name="id">The <see cref="FishDefinition.Id"/> to find.</param>
-        /// <returns>The matching definition, or null if the pond table doesn't contain it.</returns>
-        public FishDefinition FindFish(string id)
-        {
-            foreach (var entry in _pond)
-            {
-                if (entry.Fish != null && entry.Fish.Id == id)
-                    return entry.Fish;
-            }
-            return null;
-        }
 
         /// <summary>
         /// Gets the quality odds that belong to a tap grade.

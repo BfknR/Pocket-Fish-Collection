@@ -19,8 +19,9 @@ namespace PocketFish.Game.Fishing
     {
         [SerializeField] private AquariumCatalog _aquariums;
         [SerializeField] private SpeciesCatalog _catalog;
+        [SerializeField] private CatchTuning _tuning;
 
-        private CatchTuning _tuning;
+        private PondDefinition _pond;
         private string _pondId;
         private bool _isFirstPond;
         private PlayerProgress _progress;
@@ -31,8 +32,11 @@ namespace PocketFish.Game.Fishing
         private long _lastSyncTicks;
         private CollectionSession _collection;
 
-        /// <summary>Fish, odds and spawn settings of the selected aquarium's pond.</summary>
+        /// <summary>The game-wide catch odds and shadow sizes, shared by every pond.</summary>
         public CatchTuning Tuning => _tuning;
+
+        /// <summary>The selected aquarium's pond: its fish, capacity and spawn rate.</summary>
+        public PondDefinition Pond => _pond;
 
         /// <summary>The player's coins and aquarium progression.</summary>
         public PlayerProgress Progress => _progress;
@@ -50,12 +54,12 @@ namespace PocketFish.Game.Fishing
             _progress = ProgressSession.Get(_aquariums);
             _rewards = _aquariums.Economy.ToDomain();
             AquariumDefinition aquarium = _aquariums.Aquariums[_progress.SelectedIndex];
-            _tuning = aquarium.Pond;
+            _pond = aquarium.Pond;
             _pondId = aquarium.Id;
             _isFirstPond = _progress.SelectedIndex == 0;
             _collection = new CollectionSession(_catalog.ToDomainList(), CatchLogStore.Load());
             WarnAboutPondFishMissingFromCatalog();
-            _population = new PondPopulation(_tuning.PondCapacity, _tuning.SpawnIntervalSeconds, RollSpecies);
+            _population = new PondPopulation(_pond.Capacity, _pond.SpawnIntervalSeconds, RollSpecies);
             Restore();
             Sync();
         }
@@ -136,7 +140,7 @@ namespace PocketFish.Game.Fishing
         /// <returns>The matching definition, or null if the pond table no longer contains the species.</returns>
         public FishDefinition DefinitionFor(PondFish fish)
         {
-            return _tuning.FindFish(fish.Species.Id);
+            return _pond.FindFish(fish.Species.Id);
         }
 
         /// <summary>
@@ -155,7 +159,7 @@ namespace PocketFish.Game.Fishing
             var species = new List<FishSpecies>();
             foreach (string id in save.FishIds)
             {
-                FishDefinition definition = _tuning.FindFish(id);
+                FishDefinition definition = _pond.FindFish(id);
                 if (definition == null)
                 {
                     Debug.LogWarning($"Pond save references unknown fish '{id}'. Skipping it.");
@@ -174,7 +178,7 @@ namespace PocketFish.Game.Fishing
         /// </summary>
         private void WarnAboutPondFishMissingFromCatalog()
         {
-            foreach (var entry in _tuning.PondEntries)
+            foreach (var entry in _pond.Fish)
             {
                 if (entry.Fish != null && !_catalog.Contains(entry.Fish.Id))
                 {
@@ -196,11 +200,11 @@ namespace PocketFish.Game.Fishing
         private FishDefinition RollFishDefinition()
         {
             float total = 0f;
-            foreach (var entry in _tuning.PondEntries) total += entry.Weight;
+            foreach (var entry in _pond.Fish) total += entry.Weight;
 
             float pick = (float)_random.NextDouble() * total;
             FishDefinition last = null;
-            foreach (var entry in _tuning.PondEntries)
+            foreach (var entry in _pond.Fish)
             {
                 last = entry.Fish;
                 pick -= entry.Weight;

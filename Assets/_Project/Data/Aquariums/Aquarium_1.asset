@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: aquarium_1
   _displayName: Starter Tank
   _cost: 0
-  _pond: {fileID: 11400000, guid: 82f079e1752ad4d29961dc0f690c718b, type: 2}
+  _pond: {fileID: 11400000, guid: 946b92c0388534b998003143796c8615, type: 2}
   _upgrades:
   - Id: filter
     DisplayName: Filter

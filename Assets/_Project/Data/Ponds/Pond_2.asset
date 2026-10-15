@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313efdd0fbd6b45729e23a6fcf99fa16, type: 3}
+  m_Name: Pond_2
+  m_EditorClassIdentifier: PocketFish.Game::PocketFish.Game.Data.PondDefinition
+  _fish:
+  - Fish: {fileID: 11400000, guid: 448e7c8f854974806b90dcd725743b65, type: 2}
+    Weight: 2
+  - Fish: {fileID: 11400000, guid: 0ba9354ab1fd94b5bbd9077d04fcf0c1, type: 2}
+    Weight: 5
+  - Fish: {fileID: 11400000, guid: d4d9cbb5066af4b68b0efb73526a732c, type: 2}
+    Weight: 10
+  - Fish: {fileID: 11400000, guid: ea6c20713c0e14241bc7237136d3a14a, type: 2}
+    Weight: 10
+  - Fish: {fileID: 11400000, guid: e70dee7f0ef8c446a9c7e7611070a09f, type: 2}
+    Weight: 10
+  - Fish: {fileID: 11400000, guid: b16b2a6c395d4453989cff5e03c34b62, type: 2}
+    Weight: 10
+  _capacity: 6
+  _spawnIntervalSeconds: 10

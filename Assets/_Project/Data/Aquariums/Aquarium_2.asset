@@ -15,7 +15,7 @@ MonoBehaviour:
   _id: aquarium_2
   _displayName: Coral Tank
   _cost: 5000
-  _pond: {fileID: 11400000, guid: 3afc91f4320124d9e83dbee34a2fec3c, type: 2}
+  _pond: {fileID: 11400000, guid: 9c4b662099bfe40d5a7831a7ea5d232d, type: 2}
   _upgrades:
   - Id: filter
     DisplayName: Filter
